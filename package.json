@@ -4,7 +4,11 @@
   "description": "[![Actions Status](https://github.com/SibirskayaDaria/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/SibirskayaDaria/frontend-project-12/actions)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "react-scripts build",
+    "start": "react-scripts start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-server": "chat-server"
   },
   "repository": {
     "type": "git",
@@ -17,6 +21,10 @@
   },
   "homepage": "https://github.com/SibirskayaDaria/frontend-project-12#readme",
   "dependencies": {
-    "@hexlet/chat-server": "^2.0.4"
+    "@hexlet/chat-server": "^2.0.4",
+    "react-scripts": "^5.0.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.9"
   }
 }
