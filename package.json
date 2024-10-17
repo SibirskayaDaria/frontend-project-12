@@ -1,6 +1,7 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
+  "proxy": "http://localhost:5001",
   "description": "[![Actions Status](https://github.com/SibirskayaDaria/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/SibirskayaDaria/frontend-project-12/actions)",
   "main": "index.js",
   "scripts": {
@@ -26,5 +27,17 @@
   },
   "devDependencies": {
     "vite": "^5.4.9"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
