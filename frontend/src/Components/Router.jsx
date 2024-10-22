@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from "./Pages/LoginPage.jsx"
-import MainPage from "./Pages/MainPage.jsx"
-import NotFoundPage from "./Pages/NotFoundPage.jsx"
-import RegistrationPage from "./Pages/RegistrationPage.jsx";
+import Login from "./Pages/Login.jsx"
+import NotFoundf from "./Pages/NotFound.jsx"
+
 import { selectToken } from './Slices/authSlice.js';
 import { useSelector } from "react-redux"
 
