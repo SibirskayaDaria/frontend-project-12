@@ -1,4 +1,4 @@
-/* eslint-disable functional/no-expression-statements */
+/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }] */
 import axios from 'axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
@@ -11,7 +11,7 @@ const fetchData = createAsyncThunk(
       const response = await axios.get(routes.dataPath(), { headers: authHeader });
       return response.data;
     } catch (error) {
-      return rejectWithValue({ message: error.message });
+      return rejectWithValue({ message: error.message, status: error.status });
     }
   },
 );
@@ -21,6 +21,22 @@ const initialState = { loading: false, channels: [], currentChannelId: null };
 const channelsSlice = createSlice({
   name: 'channels',
   initialState,
+  reducers: {
+    setCurrentChannel: (state, { payload }) => {
+      state.currentChannelId = payload.id;
+    },
+    addChannel: (state, { payload }) => {
+      state.channels.push(payload);
+    },
+    deleteChannel: (state, { payload }) => {
+      state.channels = state.channels.filter((channel) => channel.id !== payload.id);
+    },
+    channelRename: (state, { payload }) => {
+      const { id, name } = payload;
+      const renamedChannel = state.channels.find((channel) => channel.id === id);
+      renamedChannel.name = name;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchData.pending, (state) => {
@@ -31,12 +47,13 @@ const channelsSlice = createSlice({
         state.channels = payload.channels;
         state.currentChannelId = payload.currentChannelId;
       })
-      .addCase(fetchData.rejected, (state, { payload }) => {
+      .addCase(fetchData.rejected, (state) => {
         state.loading = false;
       });
   },
 });
 
+// Экспортируем действия и редьюсер
 const actions = {
   ...channelsSlice.actions,
   fetchData,

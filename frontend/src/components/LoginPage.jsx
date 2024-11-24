@@ -42,6 +42,7 @@ const LoginPage = () => {
 
       try {
         const res = await axios.post(routes.loginPath(), values);
+        localStorage.setItem('token', res.data.token); //отредактировать 
         localStorage.setItem('userId', JSON.stringify({ ...res.data, username: values.username }));
         auth.logIn({ username: values.username });
         const { from } = location.state || { from: { pathname: '/' } };

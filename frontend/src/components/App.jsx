@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
 import {
@@ -26,6 +26,16 @@ const {
   deleteChannel,
   channelRename,
 } = actions;
+
+// Функция для дебаунса
+const useDebounce = (func, delay) => {
+  const [timer, setTimer] = useState(null);
+
+  return useCallback((...args) => {
+    clearTimeout(timer);
+    setTimer(setTimeout(() => func(...args), delay));
+  }, [timer, func, delay]);
+};
 
 const AuthProvider = ({ children }) => {
   const savedUserData = JSON.parse(localStorage.getItem('userId'));
@@ -66,9 +76,11 @@ const PrivateRoute = ({ children }) => {
   const auth = useAuth();
   const location = useLocation();
 
-  return (
-    auth.loggedIn ? children : <Navigate to={routes.loginPagePath()} state={{ from: location }} />
-  );
+  if (!auth.loggedIn) {
+    return <Navigate to={routes.loginPagePath()} state={{ from: location }} />;
+  }
+
+  return children;
 };
 
 const AuthButton = () => {
@@ -82,48 +94,85 @@ const AuthButton = () => {
 };
 
 const App = () => {
-  const socket = io();
   const dispatch = useDispatch();
+  
+  // Инициализация сокета в состоянии
+  const [socket, setSocket] = useState(null);
 
-  socket.on('newMessage', (payload) => {
-    dispatch(addMessage(payload));
-  });
-  socket.on('newChannel', (payload) => {
-    dispatch(addChannel(payload));
-  });
-  socket.on('removeChannel', (payload) => {
-    dispatch(deleteChannel(payload.id));
-  });
-  socket.on('renameChannel', (payload) => {
-    dispatch(channelRename(payload));
-  });
+  useEffect(() => {
+    // Создание нового сокета
+    const newSocket = io();
 
-  const sendMessage = useCallback((...args) => socket.emit('newMessage', ...args), [socket]);
+    // Обработчики сокета
+    newSocket.on('newMessage', (payload) => {
+      dispatch(addMessage(payload));
+    });
+    
+    newSocket.on('newChannel', (payload) => {
+      dispatch(addChannel(payload));
+    });
+    
+    newSocket.on('removeChannel', (payload) => {
+      dispatch(deleteChannel(payload.id));
+    });
+    
+    newSocket.on('renameChannel', (payload) => {
+      dispatch(channelRename(payload));
+    });
+
+    // Установка сокета
+    setSocket(newSocket);
+
+    // Очистка обработчиков и закрытие сокета при размонтировании компонента
+    return () => {
+      newSocket.off('newMessage');
+      newSocket.off('newChannel');
+      newSocket.off('removeChannel');
+      newSocket.off('renameChannel');
+      newSocket.close(); // Закрываем соединение
+    };
+    
+  }, [dispatch]);
+
+  // Дебаунс для отправки сообщений
+  const sendMessage = useDebounce((...args) => {
+    if (socket) { // Проверка на наличие сокета
+      socket.emit('newMessage', ...args);
+    }
+  }, 300);
 
   const newChannel = useCallback((name, cb) => {
-    socket.emit('newChannel', { name }, (response) => {
-      const { status, data: { id } } = response;
+    if (socket) { // Проверка на наличие сокета
+      socket.emit('newChannel', { name }, (response) => {
+        const { status, data: { id } } = response;
 
-      if (status === 'ok') {
-        dispatch(setCurrentChannel({ id }));
-        cb();
-        return response.data;
-      }
-      return status;
-    });
+        if (status === 'ok') {
+          dispatch(setCurrentChannel({ id }));
+          cb();
+          return response.data;
+        }
+        return status;
+      });
+    }
   }, [dispatch, socket]);
 
   const removeChannel = useCallback((id) => {
-    socket.emit('removeChannel', { id }, (response) => {
-      const { status } = response;
-      if (status === 'ok') {
-        dispatch(removeChannel({ id }));
-      }
-      return status;
-    });
+    if (socket) { // Проверка на наличие сокета
+      socket.emit('removeChannel', { id }, (response) => {
+        const { status } = response;
+        if (status === 'ok') {
+          dispatch(deleteChannel({ id }));
+        }
+        return status;
+      });
+    }
   }, [dispatch, socket]);
 
-  const renameChannel = useCallback(({ name, id }) => socket.emit('renameChannel', { name, id }), [socket]);
+  const renameChannel = useCallback(({ name, id }) => {
+    if (socket) { // Проверка на наличие сокета
+      socket.emit('renameChannel', { name, id });
+    }
+  }, [socket]);
 
   const socketApi = useMemo(
     () => ({
@@ -153,7 +202,7 @@ const App = () => {
                   <PrivateRoute>
                     <ChatPage />
                   </PrivateRoute>
-              )}
+                )}
               />
               <Route path={routes.loginPagePath()} element={<LoginPage />} />
               <Route path={routes.notFoundPagePath()} element={<NotFoundPage />} />
