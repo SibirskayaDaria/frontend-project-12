@@ -53,11 +53,11 @@ const channelsSlice = createSlice({
   },
 });
 
-// Экспортируем действия и редьюсер
+// Экспортируем редьюсер и действия
 const actions = {
-  ...channelsSlice.actions,
-  fetchData,
-};
-
-export { actions };
-export default channelsSlice.reducer;
+    ...channelsSlice.actions,
+    fetchData,
+  };
+  
+  export { actions };
+  export default channelsSlice.reducer;

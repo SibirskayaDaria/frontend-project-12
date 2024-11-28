@@ -1,6 +1,6 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }] */
 import { createSlice } from '@reduxjs/toolkit';
-import { actions as channelsActions } from './channelsSlice.js'; // Убедитесь, что путь правильный
+import { actions as channelsActions } from './channelsSlice.js'; 
 
 const initialState = {
   messages: [],
@@ -23,5 +23,6 @@ const messagesSlice = createSlice({
 });
 
 // Экспортируем действия и редьюсер
-export const { addMessage } = messagesSlice.actions;
+export const { actions } = messagesSlice;
+export const { addMessage } = messagesSlice;
 export default messagesSlice.reducer;
