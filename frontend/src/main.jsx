@@ -1,15 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit'; // Импортируем configureStore
-import rootReducer from './slices'; // Импортируйте ваш корневой редьюсер из папки slices
-import App from './components/App'; // Импортируйте основной компонент приложения
-import './index.css'; // Импортируйте глобальные стили
+import { configureStore } from '@reduxjs/toolkit';
+import { io } from 'socket.io-client';
+import App from './components/App';
+import rootReducer from './slices';
+import './index.css';
 
-// Создание Redux store
+// store
 const store = configureStore({
   reducer: rootReducer,
 });
+
+// Создание подключения к WebSocket
+const socket = io(); // Укажите адрес вашего сервера WebSocket
+export const SocketContext = React.createContext(socket); // Экспорт контекста
 
 // Проверка наличия элемента root перед рендерингом
 const rootElement = document.getElementById('root');
@@ -17,11 +22,13 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-// Рендеринг приложения
+
 ReactDOM.createRoot(rootElement).render(
   <Provider store={store}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    <SocketContext.Provider value={socket}> {/* Передаём сокет через контекст */}
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </SocketContext.Provider>
   </Provider>
 );

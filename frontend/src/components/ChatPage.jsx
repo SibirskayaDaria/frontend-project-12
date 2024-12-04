@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container } from 'react-bootstrap';
-import { io } from 'socket.io-client';
 
 import Channels from './chatComponents/Channels.jsx';
 import Messages from './chatComponents/Messages.jsx';
 
 import { actions } from '../slices/index.js';
 import getAuthHeader from '../getAuthHeader.js';
+import { SocketContext } from '../main.jsx'; // Импортируем контекст сокета
 
 const ChatPage = () => {
   const dispatch = useDispatch();
   const channelsInfo = useSelector((s) => s);
-  const [socket, setSocket] = useState(null);
+  const socket = useContext(SocketContext); // Используем сокет из контекста
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,20 +25,17 @@ const ChatPage = () => {
     };
 
     fetchData();
-    
-    // Подключение к WebSocket
-    const newSocket = io('http://localhost:5001'); // Убедитесь, что адрес соответствует вашему серверу
-    setSocket(newSocket);
 
     // Обработчик для получения новых сообщений
-    newSocket.on('newMessage', (message) => {
-      dispatch(actions.addMessage(message)); // Добавляем новое сообщение в Redux
+    socket.on('newMessage', (message) => {
+      dispatch(actions.addMessage(message)); // добавляем сообщение в Redux
     });
 
+    // Убираем подписку при размонтировании
     return () => {
-      newSocket.disconnect(); // Отключение при размонтировании компонента
+      socket.off('newMessage');
     };
-  }, [dispatch]);
+  }, [dispatch, socket]);
 
   if (channelsInfo.loading) {
     return (
