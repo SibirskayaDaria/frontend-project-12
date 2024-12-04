@@ -100,10 +100,10 @@ const App = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Создание нового сокета
-    const newSocket = io("http://localhost:5001", {
-      withCredentials: true // Если вы используете куки для аутентификации
-    });
+    // // Создание нового сокета
+    // const newSocket = io({
+    //   withCredentials: true 
+    // });
 
     // Обработчики сокета
     newSocket.on('newMessage', (payload) => {
