@@ -1,3 +1,4 @@
+//LoginPage.jsx
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
@@ -12,6 +13,7 @@ import routes from '../routes.js';
 
 const logInSchema = yup.object({
   username: yup.string()
+    .matches(/^[a-zA-Z0-9_]+$/, 'Только буквы, цифры и подчеркивания')
     .min(5, 'От 5 до 20 символов')
     .max(20, 'От 5 до 20 символов')
     .required('Обязательное поле'),
@@ -20,6 +22,7 @@ const logInSchema = yup.object({
     .max(20, 'От 5 до 20 символов')
     .required('Обязательное поле'),
 });
+
 
 const LoginPage = () => {
   const auth = useAuth();

@@ -1,3 +1,4 @@
+//NotFoundPage.jsx
 import notFoundImagePath from '../assets/notFound.jpg';
 
 const NotFoundPage = () => (

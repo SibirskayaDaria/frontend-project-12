@@ -1,3 +1,4 @@
+//App.jsx
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
@@ -100,10 +101,10 @@ const App = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // // Создание нового сокета
-    // const newSocket = io({
-    //   withCredentials: true 
-    // });
+    // Создание нового сокета
+    const newSocket = io({
+      withCredentials: true 
+    });
 
     // Обработчики сокета
     newSocket.on('newMessage', (payload) => {

@@ -1,3 +1,4 @@
+//Channels.jsx
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { BsPlusSquare } from 'react-icons/bs';

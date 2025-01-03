@@ -1,3 +1,4 @@
+//MessagesHeader.jsx
 import React from 'react';
 
 const MessagesHeader = ({ activeChannel, messagesCount }) => (

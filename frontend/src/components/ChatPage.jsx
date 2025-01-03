@@ -1,3 +1,4 @@
+//ChatPage.jsx
 import React, { useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container } from 'react-bootstrap';
