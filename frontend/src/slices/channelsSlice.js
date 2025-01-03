@@ -44,8 +44,8 @@ const channelsSlice = createSlice({
       })
       .addCase(fetchData.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.channels = payload.channels;
-        state.currentChannelId = payload.currentChannelId;
+        state.channels = payload;
+        //state.currentChannelId = payload.currentChannelId;
       })
       .addCase(fetchData.rejected, (state) => {
         state.loading = false;
