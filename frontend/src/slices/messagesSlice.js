@@ -17,7 +17,7 @@ const messagesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(channelsActions.fetchData.fulfilled, (state, { payload }) => {
-        state.messages = payload.messages; // Заполняем состояние сообщениями из ответа
+        state.messages = payload; // Заполняем состояние сообщениями из ответа
       });
   },
 });
