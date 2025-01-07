@@ -1,14 +1,21 @@
-//Channels.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { BsPlusSquare } from 'react-icons/bs';
 import { Nav, Button } from 'react-bootstrap';
-
 import { actions } from '../../slices/index.js';
 
 const Channels = () => {
   const { channels, currentChannelId } = useSelector((s) => s.channelsInfo);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Проверяем, есть ли уже каналы в Redux, если их нет - добавляем
+    if (channels.length === 0) {
+      console.log('Добавляем каналы');
+      dispatch(actions.addChannel({ id: 1, name: 'general' }));
+      dispatch(actions.addChannel({ id: 2, name: 'random' }));
+    }
+  }, [channels.length, dispatch]); // Зависимость от length канала, чтобы сработало только при отсутствии каналов
 
   const handleClick = (id) => {
     dispatch(actions.setCurrentChannel({ id }));
@@ -18,10 +25,6 @@ const Channels = () => {
     <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
       <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
         <b>Каналы</b>
-        <button type="button" className="p-0 text-primary btn btn-group-vertical">
-          <BsPlusSquare size="20" />
-          <span className="visually-hidden">+</span>
-        </button>
       </div>
       <Nav
         as="ul"
