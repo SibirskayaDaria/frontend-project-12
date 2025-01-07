@@ -1,4 +1,3 @@
-//MessagesForm.jsx
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -31,18 +30,21 @@ const MessagesForm = ({ socket }) => {
   };
 
   return (
-    <Form onSubmit={handleSendMessage}>
-      <Form.Group className="input-group">
+    <div className="chat-input-container mt-3 mb-3 ms-3 me-3">
+      <Form onSubmit={handleSendMessage} className="d-flex w-100">
         <Form.Control
           type="text"
           placeholder="Введите сообщение..."
           value={messageBody}
           onChange={(e) => setMessageBody(e.target.value)}
+          className="me-2 flex-grow-1"
         />
-        <Button type="submit">Отправить</Button>
-      </Form.Group>
-      {error && <div className="text-danger">{error}</div>} {/* Отображение ошибки */}
-    </Form>
+        <Button type="submit" className="btn-primary">
+          Отправить
+        </Button>
+      </Form>
+      {error && <div className="text-danger mt-2">{error}</div>} {/* Отображение ошибки */}
+    </div>
   );
 };
 

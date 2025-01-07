@@ -1,68 +1,56 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
+  padding: 0;
+}
+
+/* Контейнер для чата */
+.chat-container {
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-direction: column;
+  height: 100%; /* Высота контейнера на 100% */
+  width: 100%; /* Ширина контейнера соответствует ширине родительского элемента */
+  overflow: hidden; /* Предотвращает лишние прокрутки */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Сообщения */
+.chat-messages {
+  flex-grow: 1; /* Сообщения занимают всё доступное пространство */
+  overflow-y: auto; /* Вертикальная прокрутка */
+  padding: 15px;
+  background-color: #f8f9fa; /* Светлый фон */
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* Контейнер ввода сообщения */
+.chat-input {
+  background-color: #ffffff; /* Белый фон для ввода */
+  border-top: 1px solid #ddd; /* Разделительная линия */
+  width: calc(100% - 30px); /* Уменьшаем ширину, чтобы учесть отступы */
+  padding: 10px; /* Внутренний отступ */
+  margin-bottom: 15px; /* Отступ снизу */
+  margin-left: 15px; /* Отступ слева */
+  box-sizing: border-box; /* Учитываем padding и границы */
+  display: flex; /* Делаем контейнер гибким */
+  align-items: center; /* Выравнивание элементов по центру */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Поле ввода сообщения */
+.chat-input .form-control {
+  flex-grow: 1; /* Поле ввода занимает всё доступное пространство */
+  margin-right: 10px; /* Отступ справа от кнопки */
+}
+
+/* Кнопка отправки сообщения */
+.chat-input .btn {
+  white-space: nowrap; /* Текст кнопки не переносится */
+}
+
+
+
+.chat-input .btn:hover {
+  background-color: #0056b3; /* Более темный синий при наведении */
+}
+
+.chat-input .btn:active {
+  background-color: #003d80; /* Самый темный синий при клике */
 }

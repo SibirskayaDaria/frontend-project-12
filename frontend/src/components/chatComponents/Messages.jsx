@@ -7,6 +7,7 @@ import MessagesHeader from './MessagesHeader.jsx'; // Импортируем з�
 import MessagesForm from './MessagesForm.jsx'; // Импортируем форму для отправки сообщений
 import Message from './Message.jsx'; // Импортируем компонент для отображения отдельного сообщения
 
+
 const Messages = ({ socket }) => {
   const { channels, currentChannelId } = useSelector((state) => state.channelsInfo);
   const messages = useSelector((state) => state.messagesInfo.messages);

@@ -19,7 +19,7 @@ import LoginPage from './LoginPage.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 import { useAuth } from '../hooks/index.jsx';
 import routes from '../routes.js';
-import "../styles.css"; 
+
 
 
 const {

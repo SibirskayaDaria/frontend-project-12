@@ -5,6 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
 import App from './components/App';
 import rootReducer from './slices';
+import 'bootstrap/dist/css/bootstrap.min.css';// после добавления отобразилась форма
 import './index.css';
 
 // store
@@ -13,7 +14,7 @@ const store = configureStore({
 });
 
 // Создание подключения к WebSocket
-const socket = io(); // Укажите адрес вашего сервера WebSocket
+const socket = io(); // Адрес сервера WebSocket
 export const SocketContext = React.createContext(socket); // Экспорт контекста
 
 // Проверка наличия элемента root перед рендерингом

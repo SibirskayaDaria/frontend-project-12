@@ -1,7 +1,6 @@
-//ChatPage.jsx
 import React, { useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container } from 'react-bootstrap';
+import { Button, Container, Row } from 'react-bootstrap';
 
 import Channels from './chatComponents/Channels.jsx';
 import Messages from './chatComponents/Messages.jsx';
@@ -32,7 +31,6 @@ const ChatPage = () => {
       dispatch(actions.addMessage(message)); // добавляем сообщение в Redux
     });
 
-    // Убираем подписку при размонтировании
     return () => {
       socket.off('newMessage');
     };
