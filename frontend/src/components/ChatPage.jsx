@@ -1,22 +1,20 @@
 import React, { useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Container, Row } from 'react-bootstrap';
-
 import Channels from './chatComponents/Channels.jsx';
 import Messages from './chatComponents/Messages.jsx';
-
 import { actions } from '../slices/index.js';
-import getAuthHeader from '../getAuthHeader.js';
-import { SocketContext } from '../main.jsx'; // Импортируем контекст сокета
+import getAuthHeader from '../getAuthHeader.js'; // Правильный импорт функции
+import { SocketContext } from '../main.jsx';
 
 const ChatPage = () => {
   const dispatch = useDispatch();
   const channelsInfo = useSelector((s) => s);
-  const socket = useContext(SocketContext); // Используем сокет из контекста
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     const fetchData = async () => {
-      const authHeader = await getAuthHeader();
+      const authHeader = await getAuthHeader(); // Получаем авторизационный заголовок
       dispatch(actions.fetchData(authHeader))
         .unwrap()
         .catch((e) => {
@@ -26,7 +24,6 @@ const ChatPage = () => {
 
     fetchData();
 
-    // Обработчик для получения новых сообщений
     socket.on('newMessage', (message) => {
       dispatch(actions.addMessage(message)); // добавляем сообщение в Redux
     });
