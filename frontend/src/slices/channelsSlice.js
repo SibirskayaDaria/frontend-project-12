@@ -2,9 +2,8 @@ import axios from 'axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import routes from '../routes.js';
 
-// Асинхронный экшен для получения данных
 const fetchData = createAsyncThunk(
-  'channels/setInitialState',
+  'channels/fetchData',
   async (authHeader, { rejectWithValue }) => {
     try {
       const response = await axios.get(routes.dataPath(), { headers: authHeader });
@@ -20,67 +19,51 @@ const fetchData = createAsyncThunk(
 
 const initialState = {
   loading: false,
-  channels: [], // список каналов
-  currentChannelId: null, // текущий канал
-  error: null, // ошибка при запросе
+  channels: [], 
+  currentChannelId: null, 
+  error: null, 
 };
 
 const channelsSlice = createSlice({
   name: 'channels',
   initialState,
   reducers: {
-    // Устанавливаем текущий канал
     setCurrentChannel: (state, { payload }) => {
       state.currentChannelId = payload.id;
     },
-
-    // Добавляем новый канал, но избегаем дублирования
     addChannel: (state, { payload }) => {
-      const existingChannel = state.channels.find((channel) => channel.id === payload.id);
-      if (!existingChannel) {
-        state.channels.push(payload); // Добавляем только если канала ещё нет
-      }
+      state.channels.push(payload);
     },
-
-    // Удаляем канал
     deleteChannel: (state, { payload }) => {
       state.channels = state.channels.filter((channel) => channel.id !== payload.id);
     },
-
-    // Переименовываем канал
     channelRename: (state, { payload }) => {
-      const { id, name } = payload;
-      const renamedChannel = state.channels.find((channel) => channel.id === id);
-      if (renamedChannel) {
-        renamedChannel.name = name;
+      const channel = state.channels.find((ch) => ch.id === payload.id);
+      if (channel) {
+        channel.name = payload.name;
       }
     },
   },
   extraReducers: (builder) => {
     builder
-      // Когда запрос в состоянии pending (загрузка)
       .addCase(fetchData.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-
-      // Когда запрос успешен
       .addCase(fetchData.fulfilled, (state, { payload }) => {
         state.loading = false;
-        // Обновляем каналы, но избегаем дублирования
-        const existingChannelIds = state.channels.map((channel) => channel.id);
-        const newChannels = payload.filter((channel) => !existingChannelIds.includes(channel.id));
-        state.channels = [...state.channels, ...newChannels];
+        state.channels = payload;
+        if (!state.currentChannelId && payload.length > 0) {
+          state.currentChannelId = payload[0].id;
+        }
       })
-
-      // Когда запрос не удался
       .addCase(fetchData.rejected, (state, { payload }) => {
         state.loading = false;
-        state.error = payload ? payload.message : 'Неизвестная ошибка';
+        state.error = payload ? payload.message : 'Ошибка загрузки данных';
       });
   },
 });
 
-// Экспортируем редьюсеры и экшены
 const actions = {
   ...channelsSlice.actions,
   fetchData,

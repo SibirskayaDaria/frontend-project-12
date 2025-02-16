@@ -42,31 +42,31 @@ const useDebounce = (func, delay) => {
 
 const AuthProvider = ({ children }) => {
   const savedUserData = JSON.parse(localStorage.getItem('userId'));
-  const [loggedIn, setLoggedIn] = useState(Boolean(savedUserData));
-  const [user, setUser] = useState(
-    savedUserData ? { username: savedUserData.username } : null,
-  );
+  const [loggedIn, setLoggedIn] = useState(!!savedUserData?.username);
+  const [user, setUser] = useState(savedUserData || null);
+
+  useEffect(() => {
+    console.log("Проверка авторизации:", loggedIn);
+  }, [loggedIn]);
 
   const logIn = useCallback((userData) => {
+    localStorage.setItem('userId', JSON.stringify(userData));
     setLoggedIn(true);
-    setUser({ username: userData.username });
+    setUser(userData);
   }, []);
 
   const logOut = useCallback(() => {
     localStorage.removeItem('userId');
-    setUser(null);
     setLoggedIn(false);
+    setUser(null);
   }, []);
 
-  const memoizedValue = useMemo(
-    () => ({
-      loggedIn,
-      logIn,
-      logOut,
-      user,
-    }),
-    [loggedIn, logIn, logOut, user],
-  );
+  const memoizedValue = useMemo(() => ({
+    loggedIn,
+    logIn,
+    logOut,
+    user,
+  }), [loggedIn, logIn, logOut, user]);
 
   return (
     <AuthContext.Provider value={memoizedValue}>
