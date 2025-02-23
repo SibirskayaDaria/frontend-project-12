@@ -5,29 +5,36 @@ import Channels from '../chatComponents/Channels.jsx';
 import Messages from '../chatComponents/Messages.jsx';
 import { actions } from '../../slices/index.js';
 import getAuthHeader from '../../getAuthHeader.js';
-import { SocketContext } from '../../contexts/SocketProvider.jsx'; // Исправлен путь к контексту сокета
+import { SocketContext } from '../../contexts/SocketProvider.jsx'; 
 
 const ChatPage = () => {
   const dispatch = useDispatch();
-  const channelsInfo = useSelector((s) => s);
+  const channelsInfo = useSelector((state) => state);
   const socket = useContext(SocketContext);
 
   useEffect(() => {
     const fetchData = async () => {
-      const authHeader = await getAuthHeader();
-      dispatch(actions.fetchData(authHeader)).unwrap().catch(console.log);
+      try {
+        const authHeader = await getAuthHeader();
+        await dispatch(actions.fetchData(authHeader)).unwrap();
+      } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+      }
     };
-  
+
     fetchData();
-  
-    const handleNewMessage = (message) => dispatch(actions.addMessage(message));
-    socket.on('newMessage', handleNewMessage);
-  
-    return () => {
-      socket.off('newMessage', handleNewMessage);
-    };
+
+    if (socket) {
+      const handleNewMessage = (message) => dispatch(actions.addMessage(message));
+
+      console.log('Сокет подключен:', socket);
+      socket.on?.('newMessage', handleNewMessage);
+
+      return () => {
+        socket.off?.('newMessage', handleNewMessage);
+      };
+    }
   }, [dispatch, socket]);
-  
 
   if (channelsInfo.loading) {
     return (
@@ -43,7 +50,7 @@ const ChatPage = () => {
     <Container className="h-100 my-4 overflow-hidden rounded shadow">
       <div className="row h-100 bg-white flex-md-row">
         <Channels />
-        <Messages socket={socket} /> {/* Передаем сокет в Messages */}
+        <Messages socket={socket} />
       </div>
     </Container>
   );

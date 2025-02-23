@@ -113,7 +113,7 @@ const LoginPage = () => {
                           autoComplete="current-password"
                           isInvalid={authFailed || (formik.touched.password && formik.errors.password)}
                           required
-                        />
+                        />  
                         <Form.Label>Пароль</Form.Label>
                         <Form.Control.Feedback type="invalid">
                           {authFailed ? 'Неверные имя пользователя или пароль' : formik.errors.password}
