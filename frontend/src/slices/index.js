@@ -7,10 +7,9 @@ const actions = {
   ...channelsActions,
   ...messagesActions,
 };
+console.log('Экспортируем actions:', actions);
 
-export {
-  actions,
-};
+export { actions };
 
 export default combineReducers({
   channelsInfo: channelsSlice,

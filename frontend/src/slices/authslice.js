@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  token: localStorage.getItem('token') || null,  // Получаем токен из localStorage, если он есть
+  token: localStorage.getItem('token') || null,
+  username: localStorage.getItem('username') || null,  // Добавляем username
 };
 
 const authSlice = createSlice({
@@ -9,15 +10,21 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
-      state.token = action.payload;
-      localStorage.setItem('token', action.payload);  // Сохраняем токен в localStorage
+      state.token = action.payload.token;
+      state.username = action.payload.username;
+      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('username', action.payload.username); // Сохраняем username
+      console.log('Сохраняем username в Redux:', action.payload.username);
     },
     logout: (state) => {
       state.token = null;
-      localStorage.removeItem('token');  // Удаляем токен из localStorage
+      state.username = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('username'); // Удаляем username
     },
   },
 });
 
 export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;
+

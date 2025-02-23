@@ -17,6 +17,24 @@ const fetchData = createAsyncThunk(
   },
 );
 
+const fetchDataAddChannel = createAsyncThunk(
+  'channels/fetchDataAddChannel',
+  async (channelAddData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(routes.dataPath(), channelAddData.body, {
+        headers: channelAddData.token
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue({
+        message: error.message,
+        status: error.response?.status || 'Unknown',
+      });
+    }
+  },
+);
+
+
 const initialState = {
   loading: false,
   channels: [], 
@@ -32,8 +50,11 @@ const channelsSlice = createSlice({
       state.currentChannelId = payload.id;
     },
     addChannel: (state, { payload }) => {
-      state.channels.push(payload);
-    },
+      const existingChannel = state.channels.find(ch => ch.id === payload.id);
+      if (!existingChannel) {
+        state.channels.push(payload);
+      }
+    },    
     deleteChannel: (state, { payload }) => {
       state.channels = state.channels.filter((channel) => channel.id !== payload.id);
     },
@@ -44,6 +65,7 @@ const channelsSlice = createSlice({
       }
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchData.pending, (state) => {
@@ -60,14 +82,34 @@ const channelsSlice = createSlice({
       .addCase(fetchData.rejected, (state, { payload }) => {
         state.loading = false;
         state.error = payload ? payload.message : 'Ошибка загрузки данных';
-      });
+      })
+      .addCase(fetchDataAddChannel.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDataAddChannel.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.error = null;
+    
+        const exists = state.channels.some(ch => ch.id === payload.id);
+        if (!exists) {
+            state.channels.push(payload);
+            state.currentChannelId = payload.id; // Сразу делаем новый канал текущим
+        }
+    });        
   },
 });
 
 const actions = {
   ...channelsSlice.actions,
   fetchData,
+  fetchDataAddChannel
 };
+console.log('Экспортируем actions из channelsSlice:', {
+  ...channelsSlice.actions,
+  fetchData,
+  fetchDataAddChannel
+});
 
 export { actions };
 export default channelsSlice.reducer;

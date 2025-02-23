@@ -4,12 +4,12 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Button, Form, Col, Card, Row } from 'react-bootstrap';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import avatarImagePath from '../assets/avatar.jpg'; // Путь к изображению
-import { useAuth } from '../hooks'; // Путь к хуку для авторизации
-import routes from '../routes'; // Путь к маршрутам
-import '../index.css'; // Путь к вашему CSS-файлу
+import avatarImagePath from '../../assets/avatar.jpg';
+import { useAuth } from '../../hooks/index.jsx';
+import routes from '../../routes.js';
+import '../../styles/style.css';
+import { useSelector } from 'react-redux';
 
-// Схема валидации
 const logInSchema = yup.object({
   username: yup.string()
     .matches(/^[a-zA-Z0-9_]+$/, 'Только буквы, цифры и подчеркивания')
@@ -23,6 +23,9 @@ const logInSchema = yup.object({
 });
 
 const LoginPage = () => {
+  const username = useSelector((state) => state.auth?.username);
+  console.log('Логин успешен, username в Redux:', username);
+  
   const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
@@ -41,29 +44,23 @@ const LoginPage = () => {
     validationSchema: logInSchema,
     onSubmit: async (values) => {
       setAuthFailed(false);
-
       try {
-        // Запрос на логин
-        const res = await axios.post(routes.loginPath(), values);
+        const { data } = await axios.post(routes.loginPath(), values);
         
-        // Сохраняем токен и данные пользователя в localStorage
-        localStorage.setItem('token', res.data.token); 
-        localStorage.setItem('user', JSON.stringify({ ...res.data, username: values.username }));
-        
-        // Уведомляем хук об успешной авторизации
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', values.username);
         auth.logIn({ username: values.username });
         
-        // Переадресация после логина
         const { from } = location.state || { from: { pathname: '/' } };
         navigate(from);
       } catch (err) {
         formik.setSubmitting(false);
-        if (err.isAxiosError && err.response.status === 401) {
+        if (err.response?.status === 401) {
           setAuthFailed(true);
           input.current.select();
           return;
         }
-        throw err;
+        console.error('Ошибка при авторизации:', err);
       }
     },
   });
@@ -90,41 +87,36 @@ const LoginPage = () => {
                       <Form.Group className="mb-3 form-floating" controlId="username">
                         <Form.Control
                           type="text"
+                          name="username"
                           onChange={formik.handleChange}
                           value={formik.values.username}
                           onBlur={formik.handleBlur}
                           placeholder="username"
                           autoComplete="username"
-                          isInvalid={authFailed}
+                          isInvalid={authFailed || (formik.touched.username && formik.errors.username)}
                           required
                           ref={input}
                         />
+                        <Form.Label>Ваш ник</Form.Label>
                         {formik.touched.username && formik.errors.username && (
                           <div className="invalid-feedback">{formik.errors.username}</div>
                         )}
-                        <Form.Label>Ваш ник</Form.Label>
                       </Form.Group>
                       <Form.Group className="mb-4 form-floating" controlId="password">
                         <Form.Control
                           type="password"
+                          name="password"
                           onChange={formik.handleChange}
                           value={formik.values.password}
                           onBlur={formik.handleBlur}
                           placeholder="password"
                           autoComplete="current-password"
-                          isInvalid={authFailed}
+                          isInvalid={authFailed || (formik.touched.password && formik.errors.password)}
                           required
                         />
-                        {formik.touched.password && formik.errors.password && (
-                          <div className="invalid-feedback">{formik.errors.password}</div>
-                        )}
                         <Form.Label>Пароль</Form.Label>
-                        <Form.Control.Feedback
-                          type="invalid"
-                          className="invalid-feedback"
-                          tooltip
-                        >
-                          Неверные имя пользователя или пароль
+                        <Form.Control.Feedback type="invalid">
+                          {authFailed ? 'Неверные имя пользователя или пароль' : formik.errors.password}
                         </Form.Control.Feedback>
                       </Form.Group>
                       <Button type="submit" variant="outline-primary" className="w-100 mb-3">

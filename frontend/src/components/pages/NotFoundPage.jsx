@@ -1,5 +1,5 @@
 //NotFoundPage.jsx
-import notFoundImagePath from '../assets/notFound.jpg';
+import notFoundImagePath from '../../assets/notFound.jpg'; // исправленный путь
 
 const NotFoundPage = () => (
   <div className="text-center">

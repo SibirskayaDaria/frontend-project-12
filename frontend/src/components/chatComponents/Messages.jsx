@@ -10,7 +10,7 @@ import Message from './Message.jsx'; // Импортируем компонен�
 
 const Messages = ({ socket }) => {
   const { channels, currentChannelId } = useSelector((state) => state.channelsInfo);
-  const messages = useSelector((state) => state.messagesInfo.messages);
+  const messages = useSelector((state) => state.messages?.messages ?? []);
 
   const activeChannel = channels.find(({ id }) => id === currentChannelId);
   const activeChannelMessages = messages.filter((message) => message.channelId === currentChannelId);

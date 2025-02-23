@@ -1,6 +1,6 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }] */
 import { createSlice } from '@reduxjs/toolkit';
-import { actions as channelsActions } from './channelsSlice.js'; 
+import { actions as channelsActions } from './channelsSlice.js';
 
 const initialState = {
   messages: [],
@@ -11,18 +11,17 @@ const messagesSlice = createSlice({
   initialState,
   reducers: {
     addMessage: (state, { payload }) => {
-      state.messages.push(payload); // Добавляем новое сообщение в массив
+      state.messages.push(payload);
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(channelsActions.fetchData.fulfilled, (state, { payload }) => {
-        state.messages = payload; // Заполняем состояние сообщениями из ответа
-      });
+    builder.addCase(channelsActions.fetchData.fulfilled, (state, { payload }) => {
+      state.messages = payload.messages ?? [];
+    });
   },
 });
 
-// Экспортируем действия и редьюсер
-export const { actions } = messagesSlice;
-export const { addMessage } = messagesSlice;
+// ✅ Экспортируем `addMessage` отдельно
+export const { addMessage } = messagesSlice.actions;
+export const actions = messagesSlice.actions;
 export default messagesSlice.reducer;

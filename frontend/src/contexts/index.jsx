@@ -1,5 +1,2 @@
-//contexts/index.jsx
-import { createContext } from 'react';
-
-export const AuthContext = createContext({});
-export const SocketContext = createContext(null);
+export { AuthContext } from './AuthProvider.jsx';
+export { SocketContext } from './SocketProvider.jsx';

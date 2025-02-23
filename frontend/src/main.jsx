@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
-import App from './components/App';
+import App from './App';
 import rootReducer from './slices';
 import 'bootstrap/dist/css/bootstrap.min.css';// после добавления отобразилась форма
 import './index.css';
@@ -26,10 +26,8 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <Provider store={store}>
-    <SocketContext.Provider value={socket}> {/* Передаём сокет через контекст */}
       <React.StrictMode>
         <App />
       </React.StrictMode>
-    </SocketContext.Provider>
   </Provider>
 );

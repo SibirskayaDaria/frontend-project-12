@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Nav, Button, Modal, Form } from 'react-bootstrap';
 import { actions } from '../../slices/index.js';
+import getAuthHeader from '../../getAuthHeader.js';
 
 const Channels = () => {
   const { channels, currentChannelId, loading, error } = useSelector((s) => s.channelsInfo);
@@ -25,12 +26,19 @@ const Channels = () => {
   };
 
   const handleAddChannel = () => {
+    const authHeader = getAuthHeader(); // Получаем авторизационный заголовок
+    handleCloseModal();
     if (newChannelName.trim()) {
-      const newChannel = {
-        id: Date.now(),
-        name: newChannelName.trim(),
-      };
-      dispatch(actions.addChannel(newChannel));
+      dispatch(actions.fetchDataAddChannel({
+        token: authHeader,
+        body: {
+          name: newChannelName
+        }
+      }))
+        .unwrap()
+        .catch((e) => {
+          console.log(e);
+        });
       handleCloseModal();
     }
   };
