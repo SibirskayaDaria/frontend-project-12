@@ -4,19 +4,17 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5002, 
+    port: 5002, // Vite-сервер работает на 5002
     proxy: {
-      // Проксируем запросы к API
       '/api': {
-        target: 'http://127.0.0.1:5001' 
+        target: 'http://127.0.0.1:5001', // Исправленный порт на 5001
+        changeOrigin: true,
+        secure: false,
       },
-      // Проксируем WebSocket соединения
       '/socket.io': {
-        target: 'http://127.0.0.1:5001', 
-        ws: true, 
-        rewriteWsOrigin: true,
+        target: 'http://127.0.0.1:5001',
+        ws: true,
       },
-    },
+    },    
   },
 });
-

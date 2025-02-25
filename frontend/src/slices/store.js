@@ -1,16 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './authslice';
-import messagesReducer from './messagesSlice';
-import apiSlice from './slices/apiSlice'; // ✅ Импорт API Slice
+import authReducer from '../slices/authSlice'; // Исправлен путь
+import channelsReducer from '../slices/channelsSlice';
+import apiSlice from '../slices/apiSlice';
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    messages: messagesReducer,
-    [apiSlice.reducerPath]: apiSlice.reducer, // ✅ Добавляем RTK Query в редюсер
+    channels: channelsReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware), // ✅ Добавляем middleware RTK Query
+    getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
 export default store;

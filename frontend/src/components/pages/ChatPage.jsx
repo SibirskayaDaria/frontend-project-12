@@ -1,51 +1,45 @@
-// Удаление WebSocket и добавление RTK Query
+import React, { useState } from 'react';
+import { useFetchDataQuery, useSendMessageMutation } from '../../slices/apiSlice.js';
 
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Navbar, Container } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import AuthProvider from './contexts/AuthProvider.jsx'; // ✅ Исправлен путь
-import ChatPage from '../Components/pages/ChatPage.jsx'; // ✅ Исправлен путь
-import LoginPage from '../Components/pages/LoginPage.jsx'; // ✅ Исправлен путь
-import NotFoundPage from '../Components/pages/NotFoundPage.jsx'; // ✅ Исправлен путь
-import AuthButton from '../Components/components/AuthButton.jsx'; // ✅ Исправлен путь
-import PrivateRoute from '../Components/routes/PrivateRoute.jsx'; // ✅ Исправлен путь
-import routes from '../routes.js'; // ✅ Исправлен путь
-import { fetchData } from '../slices/apiSlice.js'; // ✅ Исправлен путь
+const ChatPage = () => {
+  const { data: messages, error, isLoading } = useFetchDataQuery();
+  const [sendMessage] = useSendMessageMutation();
+  const [message, setMessage] = useState('');
 
-const App = () => {
-  const dispatch = useDispatch();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    try {
+      await sendMessage({ text: message }).unwrap();
+      setMessage('');
+    } catch (err) {
+      console.error('Ошибка при отправке сообщения:', err);
+    }
+  };
 
-  useEffect(() => {
-    dispatch(fetchData()); // Загрузка данных при монтировании
-  }, [dispatch]);
+  if (isLoading) return <p>Загрузка...</p>;
+  if (error) return <p>Ошибка загрузки сообщений</p>;
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className="d-flex flex-column h-100">
-          <Navbar bg="white" expand="lg" className="shadow-sm">
-            <Container>
-              <Navbar.Brand as={Link} to={routes.chatPagePath()}>Hexlet Chat</Navbar.Brand>
-              <AuthButton />
-            </Container>
-          </Navbar>
-          <Routes>
-            <Route
-              path={routes.chatPagePath()}
-              element={
-                <PrivateRoute>
-                  <ChatPage />
-                </PrivateRoute>
-              }
-            />
-            <Route path={routes.loginPagePath()} element={<LoginPage />} />
-            <Route path={routes.notFoundPagePath()} element={<NotFoundPage />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+    <div className="chat-container">
+      <div className="messages">
+        {messages?.map((msg) => (
+          <div key={msg.id} className="message">
+            <strong>{msg.user}:</strong> {msg.text}
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Введите сообщение..."
+        />
+        <button type="submit">Отправить</button>
+      </form>
+    </div>
   );
 };
 
-export default App;
+export default ChatPage;

@@ -1,17 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
+import authReducer from './authSlice';
+import apiSlice from './apiSlice';
 
-import channelsSlice, { actions as channelsActions } from './channelsSlice.js';
-import messagesSlice, { actions as messagesActions } from './messagesSlice.js';
-
-const actions = {
-  ...channelsActions,
-  ...messagesActions,
-};
-console.log('Экспортируем actions:', actions);
-
-export { actions };
-
-export default combineReducers({
-  channelsInfo: channelsSlice,
-  messagesInfo: messagesSlice,
+const rootReducer = combineReducers({
+  auth: authReducer,
+  [apiSlice.reducerPath]: apiSlice.reducer,
 });
+
+export default rootReducer; // ✅ Экспортируем только rootReducer

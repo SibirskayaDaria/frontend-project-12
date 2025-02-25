@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const apiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: 'api', // ✅ Должно совпадать с rootReducer
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5000/api', // Укажи актуальный URL API
+    baseUrl: '/api', // ✅ Используем прокси Vite
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.token;
+      const token = getState()?.auth?.token;
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -14,13 +14,17 @@ const apiSlice = createApi({
   }),
   endpoints: (builder) => ({
     fetchData: builder.query({
-      query: () => '/data', // Укажи корректный путь к API
+      query: () => ({
+        url: '/data',
+        headers: { 'Content-Type': 'application/json' },
+      }),
     }),
     sendMessage: builder.mutation({
       query: (message) => ({
         url: '/messages',
         method: 'POST',
         body: message,
+        headers: { 'Content-Type': 'application/json' },
       }),
     }),
   }),

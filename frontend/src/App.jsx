@@ -3,7 +3,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Navbar, Container } from 'react-bootstrap';
-import AuthProvider from '../../contexts/AuthProvider.jsx';
+import AuthProvider from "./contexts/AuthProvider.jsx";
 import ChatPage from './Components/pages/ChatPage.jsx';
 import LoginPage from './Components/pages/LoginPage.jsx';
 import NotFoundPage from './Components/pages/NotFoundPage.jsx';
