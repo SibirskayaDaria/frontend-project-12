@@ -35,4 +35,4 @@ const apiSlice = createApi({
 });
 
 export const { useGetChannelsQuery, useAddChannelMutation, useGetMessagesQuery, useSendMessageMutation } = apiSlice;
-export default apiSlice;
+export { apiSlice }; 

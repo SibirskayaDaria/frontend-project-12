@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useFetchDataQuery, useSendMessageMutation } from '../../slices/apiSlice.js';
+import { useGetMessagesQuery, useSendMessageMutation } from '../../slices/apiSlice.js';
 
 const ChatPage = () => {
-  const { data: messages, error, isLoading } = useFetchDataQuery();
+  const { data: messages, error, isLoading } = useGetMessagesQuery();
   const [sendMessage] = useSendMessageMutation();
   const [message, setMessage] = useState('');
 
@@ -10,7 +10,7 @@ const ChatPage = () => {
     e.preventDefault();
     if (!message.trim()) return;
     try {
-      await sendMessage({ text: message }).unwrap();
+      await sendMessage({ body: message, channelId: '1', username: 'admin' }).unwrap();
       setMessage('');
     } catch (err) {
       console.error('Ошибка при отправке сообщения:', err);
@@ -25,7 +25,7 @@ const ChatPage = () => {
       <div className="messages">
         {messages?.map((msg) => (
           <div key={msg.id} className="message">
-            <strong>{msg.user}:</strong> {msg.text}
+            <strong>{msg.username}:</strong> {msg.body}
           </div>
         ))}
       </div>
