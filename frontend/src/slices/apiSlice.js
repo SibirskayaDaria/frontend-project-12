@@ -3,16 +3,17 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/v1', // 🔥 Добавил `/v1`, как в документации API
+    baseUrl: '/api/v1',
     prepareHeaders: (headers, { getState }) => {
       const token = getState()?.auth?.token;
       if (token) headers.set('Authorization', `Bearer ${token}`);
       return headers;
     },
   }),
+  tagTypes: ['Messages'], // 🔥 Добавили теги для кеша
   endpoints: (builder) => ({
     getChannels: builder.query({
-      query: () => '/channels', // ✅ Теперь путь `/api/v1/channels`
+      query: () => '/channels',
     }),
     addChannel: builder.mutation({
       query: (channel) => ({
@@ -22,7 +23,8 @@ const apiSlice = createApi({
       }),
     }),
     getMessages: builder.query({
-      query: () => '/messages', // ✅ Теперь путь `/api/v1/messages`
+      query: () => '/messages',
+      providesTags: ['Messages'], // ✅ Помечаем кеш как `Messages`
     }),
     sendMessage: builder.mutation({
       query: (message) => ({
@@ -30,9 +32,10 @@ const apiSlice = createApi({
         method: 'POST',
         body: message,
       }),
+      invalidatesTags: ['Messages'], // 🔥 Обнуляем кеш после отправки
     }),
   }),
 });
 
 export const { useGetChannelsQuery, useAddChannelMutation, useGetMessagesQuery, useSendMessageMutation } = apiSlice;
-export { apiSlice }; 
+export { apiSlice };

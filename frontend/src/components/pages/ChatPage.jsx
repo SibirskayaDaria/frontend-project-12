@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { useGetMessagesQuery, useSendMessageMutation } from '../../slices/apiSlice.js';
 
 const ChatPage = () => {
-  const { data: messages, error, isLoading } = useGetMessagesQuery();
+  const { data: messages, error, isLoading } = useGetMessagesQuery(); 
   const [sendMessage] = useSendMessageMutation();
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
+  
+    console.log('Отправка сообщения:', { body: message, channelId: '1', username: 'admin' });
+  
     try {
       await sendMessage({ body: message, channelId: '1', username: 'admin' }).unwrap();
       setMessage('');
     } catch (err) {
       console.error('Ошибка при отправке сообщения:', err);
     }
-  };
+  };  
 
   if (isLoading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка загрузки сообщений</p>;

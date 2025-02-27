@@ -11,6 +11,7 @@ const messagesSlice = createSlice({
   initialState,
   reducers: {
     addMessage: (state, { payload }) => {
+      console.log('Пришло в редьюсер:', action.payload);
       state.messages.push(payload);
     },
   },
