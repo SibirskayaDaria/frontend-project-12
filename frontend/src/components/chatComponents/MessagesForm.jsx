@@ -1,43 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '../../slices/messagesSlice.js';
+import { useSelector } from 'react-redux';
+import { useSendMessageMutation } from '../../slices/apiSlice.js';
 
-const MessagesForm = ({ socket }) => {
-  const dispatch = useDispatch();
+const MessagesForm = () => {
   const [messageBody, setMessageBody] = useState('');
   const [error, setError] = useState('');
+  const [sendMessage] = useSendMessageMutation();
   const channelId = useSelector((state) => state.channelsInfo?.currentChannelId);
-  const usernameFromRedux = useSelector((state) => state.auth?.username);
-  const usernameFromStorage = localStorage.getItem('username');
-  const [username, setUsername] = useState(usernameFromRedux || usernameFromStorage || 'Гость');
+  const username = useSelector((state) => state.auth?.username) || localStorage.getItem('username') || 'Гость';
 
-  useEffect(() => {
-    setUsername(usernameFromRedux || usernameFromStorage || 'Гость');
-  }, [usernameFromRedux]);
-
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!messageBody.trim()) {
       setError('Сообщение не может быть пустым.');
       return;
     }
 
-    if (!socket?.connected) {
-      setError('Ошибка: нет соединения с сервером.');
-      return;
+    try {
+      await sendMessage({ body: messageBody, channelId, username }).unwrap();
+      setMessageBody('');
+      setError('');
+    } catch (err) {
+      setError('Ошибка при отправке сообщения.');
+      console.error('Ошибка:', err);
     }
-
-    const newMessage = { body: messageBody, channelId, username };
-    socket.emit('newMessage', newMessage, (response) => {
-      if (response?.status === 'ok') {
-        dispatch(addMessage(newMessage));
-        setMessageBody('');
-        setError('');
-      } else {
-        setError('Ошибка при отправке сообщения.');
-      }
-    });
   };
 
   return (

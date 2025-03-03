@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Nav, Button, Modal, Form } from 'react-bootstrap';
-import { actions } from '../../slices/index.js';
-import getAuthHeader from '../../getAuthHeader.js';
+import { fetchData, fetchDataAddChannel, setCurrentChannel } from '../../slices/channelsSlice.js';
 
 const Channels = () => {
   const { channels, currentChannelId, loading, error } = useSelector((s) => s.channelsInfo);
@@ -11,43 +10,40 @@ const Channels = () => {
   const [newChannelName, setNewChannelName] = useState('');
 
   useEffect(() => {
+    console.log("Компонент Channels монтируется или обновляется");
     const authHeader = { Authorization: `Bearer ${localStorage.getItem('token')}` };
-    dispatch(actions.fetchData(authHeader));
+    dispatch(fetchData(authHeader));
   }, [dispatch]);
+  
+  console.log("Компонент Channels рендерится!");
 
   const handleClick = (id) => {
-    dispatch(actions.setCurrentChannel({ id }));
+    dispatch(setCurrentChannel(id));
   };
-
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setNewChannelName('');
-  };
-
+  
   const handleAddChannel = () => {
-    const authHeader = getAuthHeader(); // Получаем авторизационный заголовок
+    const token = localStorage.getItem('token');
     handleCloseModal();
     if (newChannelName.trim()) {
-      dispatch(actions.fetchDataAddChannel({
-        token: authHeader,
-        body: {
-          name: newChannelName
-        }
+      dispatch(fetchDataAddChannel({
+        body: { name: newChannelName },
+        token,
       }))
         .unwrap()
-        .catch((e) => {
-          console.log(e);
-        });
-      handleCloseModal();
+        .then(() => console.log("Канал успешно добавлен"))
+        .catch((e) => console.log("Ошибка при добавлении канала:", e));
     }
   };
 
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  
   if (loading) {
     return <p className="text-center">Загрузка каналов...</p>;
   }
 
   if (error) {
+    console.log("Ошибка Redux:", error);
     return <p className="text-danger text-center">Ошибка: {error}</p>;
   }
 
@@ -75,7 +71,6 @@ const Channels = () => {
         ))}
       </Nav>
 
-      {/* Модальное окно */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Создать канал</Modal.Title>
@@ -105,4 +100,3 @@ const Channels = () => {
 };
 
 export default Channels;
-
