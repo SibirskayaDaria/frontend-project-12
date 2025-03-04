@@ -32,13 +32,14 @@ const apiSlice = createApi({
       invalidatesTags: ['Channels'],
     }),
     renameChannel: builder.mutation({
-      query: ({ channelId, newName }) => ({
-        url: `/channels/${channelId}`,
+      query: ({ id, name }) => ({
+        url: `/channels/${id}`,
         method: 'PATCH',
-        body: { name: newName },
+        body: { name },
       }),
       invalidatesTags: ['Channels'],
     }),
+    
     getMessages: builder.query({
       query: () => '/messages',
       providesTags: ['Messages'],

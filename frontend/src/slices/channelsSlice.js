@@ -2,6 +2,11 @@ import axios from 'axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import routes from '../routes.js';
 
+console.log('routes:', routes);
+console.log('routes.channelPath:', routes.channelPath);
+
+
+
 const fetchData = createAsyncThunk(
   'channels/fetchData',
   async (authHeader, { rejectWithValue }) => {
@@ -21,12 +26,41 @@ const fetchDataAddChannel = createAsyncThunk(
   'channels/fetchDataAddChannel',
   async ({ body, token }, { rejectWithValue }) => {
     try {
-      const headers = {};
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const response = await axios.post(routes.dataPath(), body, { headers });
       return response.data;
+    } catch (error) {
+      return rejectWithValue({
+        message: error.message,
+        status: error.response?.status || 'Unknown',
+      });
+    }
+  },
+);
+
+const fetchDataDeleteChannel = createAsyncThunk(
+  'channels/fetchDataDeleteChannel',
+  async ({ id, token }, { rejectWithValue }) => {
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.delete(routes.channelPath(id), { headers });
+      return id;
+    } catch (error) {
+      return rejectWithValue({
+        message: error.message,
+        status: error.response?.status || 'Unknown',
+      });
+    }
+  },
+);
+
+const fetchDataRenameChannel = createAsyncThunk(
+  'channels/fetchDataRenameChannel',
+  async ({ id, name, token }, { rejectWithValue }) => {
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.patch(routes.channelPath(id), { name }, { headers });
+      return { id, name };
     } catch (error) {
       return rejectWithValue({
         message: error.message,
@@ -50,28 +84,6 @@ const channelsSlice = createSlice({
     setCurrentChannel: (state, { payload }) => {
       state.currentChannelId = payload;
     },
-    addChannel: (state, { payload }) => {
-      if (payload?.id && !state.channels.some((ch) => ch.id === payload.id)) {
-        state.channels.push(payload);
-        state.currentChannelId = payload.id;
-      }
-    },
-    deleteChannel: (state, { payload }) => {
-      state.channels = state.channels.filter((channel) => channel.id !== payload);
-    },
-    channelRename: (state, { payload }) => {
-      const channel = state.channels.find((ch) => ch.id === payload?.id);
-      if (channel && payload?.name) {
-        channel.name = payload.name;
-      }
-    },
-    addMessage: (state, { payload }) => {
-      const channel = state.channels.find((ch) => ch.id === payload.channelId);
-      if (channel) {
-        channel.messages = channel.messages || [];
-        channel.messages.push(payload.message);
-      }
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -90,25 +102,22 @@ const channelsSlice = createSlice({
         state.loading = false;
         state.error = payload ? payload.message : 'Ошибка загрузки данных';
       })
-      .addCase(fetchDataAddChannel.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(fetchDataAddChannel.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.error = null;
-        if (payload?.id && !state.channels.some((ch) => ch.id === payload.id)) {
-          state.channels.push(payload);
-          state.currentChannelId = payload.id;
-        }
+        state.channels.push(payload);
+        state.currentChannelId = payload.id;
       })
-      .addCase(fetchDataAddChannel.rejected, (state, { payload }) => {
-        state.loading = false;
-        state.error = payload ? payload.message : 'Ошибка добавления канала';
+      .addCase(fetchDataDeleteChannel.fulfilled, (state, { payload }) => {
+        state.channels = state.channels.filter((channel) => channel.id !== payload);
+      })
+      .addCase(fetchDataRenameChannel.fulfilled, (state, { payload }) => {
+        const channel = state.channels.find((ch) => ch.id === payload.id);
+        if (channel) {
+          channel.name = payload.name;
+        }
       });
   },
 });
 
-export const { addChannel, setCurrentChannel, deleteChannel, channelRename, addMessage } = channelsSlice.actions;
-export { fetchData, fetchDataAddChannel };
+export const { setCurrentChannel } = channelsSlice.actions;
+export { fetchData, fetchDataAddChannel, fetchDataDeleteChannel, fetchDataRenameChannel };
 export default channelsSlice.reducer;
