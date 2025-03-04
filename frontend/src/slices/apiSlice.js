@@ -10,10 +10,11 @@ const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Messages'], // 🔥 Добавили теги для кеша
+  tagTypes: ['Messages', 'Channels'], // Добавили теги для кеширования
   endpoints: (builder) => ({
     getChannels: builder.query({
       query: () => '/channels',
+      providesTags: ['Channels'],
     }),
     addChannel: builder.mutation({
       query: (channel) => ({
@@ -21,10 +22,26 @@ const apiSlice = createApi({
         method: 'POST',
         body: channel,
       }),
+      invalidatesTags: ['Channels'],
+    }),
+    deleteChannel: builder.mutation({
+      query: (channelId) => ({
+        url: `/channels/${channelId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Channels'],
+    }),
+    renameChannel: builder.mutation({
+      query: ({ channelId, newName }) => ({
+        url: `/channels/${channelId}`,
+        method: 'PATCH',
+        body: { name: newName },
+      }),
+      invalidatesTags: ['Channels'],
     }),
     getMessages: builder.query({
       query: () => '/messages',
-      providesTags: ['Messages'], // ✅ Помечаем кеш как `Messages`
+      providesTags: ['Messages'],
     }),
     sendMessage: builder.mutation({
       query: (message) => ({
@@ -32,10 +49,17 @@ const apiSlice = createApi({
         method: 'POST',
         body: message,
       }),
-      invalidatesTags: ['Messages'], // 🔥 Обнуляем кеш после отправки
+      invalidatesTags: ['Messages'],
     }),
   }),
 });
 
-export const { useGetChannelsQuery, useAddChannelMutation, useGetMessagesQuery, useSendMessageMutation } = apiSlice;
+export const { 
+  useGetChannelsQuery, 
+  useAddChannelMutation, 
+  useDeleteChannelMutation, 
+  useRenameChannelMutation, 
+  useGetMessagesQuery, 
+  useSendMessageMutation 
+} = apiSlice;
 export { apiSlice };
