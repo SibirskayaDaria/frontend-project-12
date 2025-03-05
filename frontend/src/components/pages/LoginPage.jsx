@@ -134,7 +134,7 @@ const LoginPage = () => {
             <Card.Footer className="p-4">
               <div className="text-center">
                 <span>Нет аккаунта?</span>{' '}
-                <NavLink to={routes.signupPath()}>Регистрация</NavLink>
+                <NavLink to={routes.signUpPagePath()}>Регистрация</NavLink>
               </div>
             </Card.Footer>
           </Card>
