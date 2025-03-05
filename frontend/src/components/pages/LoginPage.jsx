@@ -25,15 +25,17 @@ const logInSchema = yup.object({
 const LoginPage = () => {
   const username = useSelector((state) => state.auth?.username);
   console.log('Логин успешен, username в Redux:', username);
-  
+
   const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const input = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    input.current.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
 
   const formik = useFormik({
@@ -42,7 +44,7 @@ const LoginPage = () => {
       password: '',
     },
     validationSchema: logInSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       setAuthFailed(false);
       try {
         const { data } = await axios.post(routes.loginPath(), values);
@@ -50,17 +52,19 @@ const LoginPage = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', values.username);
         auth.logIn({ username: values.username });
-        
-        const { from } = location.state || { from: { pathname: '/' } };
-        navigate(from);
+
+        const from = location.state?.from?.pathname || routes.chatPagePath();
+        console.log('Redirecting to:', from);
+        navigate(from, { replace: true });
+
       } catch (err) {
-        formik.setSubmitting(false);
+        setSubmitting(false);
         if (err.response?.status === 401) {
           setAuthFailed(true);
-          input.current.select();
-          return;
+          if (inputRef.current) inputRef.current.select();
+        } else {
+          console.error('Ошибка при авторизации:', err);
         }
-        console.error('Ошибка при авторизации:', err);
       }
     },
   });
@@ -94,8 +98,8 @@ const LoginPage = () => {
                           placeholder="username"
                           autoComplete="username"
                           isInvalid={authFailed || (formik.touched.username && formik.errors.username)}
+                          ref={inputRef}
                           required
-                          ref={input}
                         />
                         <Form.Label>Ваш ник</Form.Label>
                         {formik.touched.username && formik.errors.username && (
@@ -113,7 +117,7 @@ const LoginPage = () => {
                           autoComplete="current-password"
                           isInvalid={authFailed || (formik.touched.password && formik.errors.password)}
                           required
-                        />  
+                        />
                         <Form.Label>Пароль</Form.Label>
                         <Form.Control.Feedback type="invalid">
                           {authFailed ? 'Неверные имя пользователя или пароль' : formik.errors.password}
@@ -130,7 +134,7 @@ const LoginPage = () => {
             <Card.Footer className="p-4">
               <div className="text-center">
                 <span>Нет аккаунта?</span>{' '}
-                <NavLink to="/register">Регистрация</NavLink>
+                <NavLink to={routes.signupPath()}>Регистрация</NavLink>
               </div>
             </Card.Footer>
           </Card>

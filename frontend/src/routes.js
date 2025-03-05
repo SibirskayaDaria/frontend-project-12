@@ -7,5 +7,6 @@ export default {
   channelPath: (id) => `/api/v1/channels/${id}`,
   chatPagePath: () => '/',
   loginPagePath: () => '/login',
+  signUpPagePath: () => '/signup', // Добавлено
   notFoundPagePath: () => '*',
 };

@@ -1,28 +1,26 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import ChatPage from '../pages/ChatPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
+import SignUpPage from '../pages/SignUpPage.jsx';
 import NotFoundPage from '../pages/NotFoundPage.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
-import Navbar from '../components/Navbar.jsx';
-import routes from '../../routes.js'; // ✅ Добавлен импорт маршрутов
+import routes from '../../routes.js';
 
-const AppRouter = () => (
-  <Router>
-    <Navbar />
-    <Routes>
-      <Route
-        path={routes.chatPagePath()} // ✅ Теперь работает
-        element={(
-          <PrivateRoute>
-            <ChatPage />
-          </PrivateRoute>
-        )}
-      />
-      <Route path={routes.loginPagePath()} element={<LoginPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  </Router>
+const RouterComponent = () => (
+  <Routes>
+    <Route
+      path={routes.chatPagePath()}
+      element={
+        <PrivateRoute>
+          <ChatPage />
+        </PrivateRoute>
+      }
+    />
+    <Route path={routes.loginPagePath()} element={<LoginPage />} />
+    <Route path={routes.signUpPagePath()} element={<SignUpPage />} />
+    <Route path="*" element={<NotFoundPage />} />
+  </Routes>
 );
 
-export default AppRouter;
+export default RouterComponent;
