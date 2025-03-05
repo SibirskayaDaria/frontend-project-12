@@ -9,4 +9,5 @@ export default {
   loginPagePath: () => '/login',
   signUpPagePath: () => '/signup', // Добавлено
   notFoundPagePath: () => '*',
+  
 };
