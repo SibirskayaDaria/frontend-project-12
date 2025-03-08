@@ -1,44 +1,43 @@
-console.log('ChatPage рендерится');
+console.log('ChatPage is rendering');
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetMessagesQuery, useSendMessageMutation } from '../../slices/apiSlice.js';
 import Channels from "../chatComponents/Channels.jsx";
+import { useTranslation } from 'react-i18next';
 
-// Функция для правильного склонения слова "сообщение"
-const getMessageCountText = (count) => {
-  if (count % 10 === 1 && count % 100 !== 11) return `${count} сообщение`;
-  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return `${count} сообщения`;
-  return `${count} сообщений`;
+const getMessageCountText = (count, t) => {
+  if (count % 10 === 1 && count % 100 !== 11) return t('messages.one', { count });
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return t('messages.few', { count });
+  return t('messages.many', { count });
 };
 
 const ChatPage = () => {
+  const { t } = useTranslation();
   const { data: messages = [], error, isLoading } = useGetMessagesQuery();
   const [sendMessage] = useSendMessageMutation();
   const [message, setMessage] = useState('');
 
   const channelId = useSelector((state) => state.channelsInfo?.currentChannelId);
   const channels = useSelector((state) => state.channelsInfo?.channels);
-  const username = useSelector((state) => state.auth?.username) || localStorage.getItem('username') || 'Гость';
+  const username = useSelector((state) => state.auth?.username) || localStorage.getItem('username') || t('guest');
 
-  // Получаем имя текущего чата
   const currentChannel = channels.find((channel) => channel.id === channelId);
-  const channelName = currentChannel ? currentChannel.name : 'Неизвестный чат';
+  const channelName = currentChannel ? currentChannel.name : t('unknown_chat');
 
-  // Фильтруем сообщения по текущему чату
   const filteredMessages = messages.filter((msg) => msg.channelId === channelId);
-  const messageCountText = getMessageCountText(filteredMessages.length);
+  const messageCountText = getMessageCountText(filteredMessages.length, t);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    console.log('Отправка сообщения:', { body: message, channelId, username });
+    console.log(t('sending_message'), { body: message, channelId, username });
 
     try {
       await sendMessage({ body: message, channelId, username }).unwrap();
       setMessage('');
     } catch (err) {
-      console.error('Ошибка при отправке сообщения:', err);
+      console.error(t('error_sending_message'), err);
     }
   };
 
@@ -47,15 +46,13 @@ const ChatPage = () => {
       <Channels />
 
       <div className="chat-container">
-        {isLoading && <p>Загрузка...</p>}
-        {error && <p className="text-danger">Ошибка загрузки сообщений</p>}
+        {isLoading && <p>{t('loading')}</p>}
+        {error && <p className="text-danger">{t('error_loading_messages')}</p>}
 
         <div className="bg-light mb-4 p-3 shadow-sm small">
           <p className="m-0">
-            {/* Динамически передаём имя текущего чата */}
             <b># {channelName}</b>
           </p>
-          {/* Динамически передаём количество сообщений с правильным склонением */}
           <span className="text-muted">{messageCountText}</span>
         </div>
 
@@ -68,7 +65,7 @@ const ChatPage = () => {
                 </div>
               ))
             ) : (
-              <p className="text-muted">Сообщений пока нет</p>
+              <p className="text-muted">{t('no_messages')}</p>
             )}
           </div>
 
@@ -78,13 +75,12 @@ const ChatPage = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Введите сообщение..."
+                placeholder={t('enter_message')}
                 className="form-control"
               />
-              <button type="submit" className="btn btn-primary">Отправить</button>
+              <button type="submit" className="btn btn-primary">{t('send')}</button>
             </div>
           </form>
-
         </div>
       </div>
     </div>

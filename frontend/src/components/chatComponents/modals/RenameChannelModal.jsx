@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { fetchDataRenameChannel } from '../../../slices/channelsSlice';
+import profanityFilter from '../../../profanityFilter.js';
 
 const RenameChannelModal = ({ show, handleClose, channel }) => {
   const [newName, setNewName] = useState('');
+  const [error, setError] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -15,8 +17,20 @@ const RenameChannelModal = ({ show, handleClose, channel }) => {
 
   const handleRename = (e) => {
     e.preventDefault();
-    if (!newName.trim()) return;
-    dispatch(fetchDataRenameChannel({ id: channel.id, name: newName, token: localStorage.getItem('token') }));
+    setError('');
+
+    const trimmedName = newName.trim();
+    if (!trimmedName) {
+      setError('Название канала не может быть пустым.');
+      return;
+    }
+    
+    if (profanityFilter.check(trimmedName)) {
+      setError('Название содержит запрещённые слова.');
+      return;
+    }
+
+    dispatch(fetchDataRenameChannel({ id: channel.id, name: trimmedName, token: localStorage.getItem('token') }));
     handleClose();
   };
 
@@ -26,6 +40,7 @@ const RenameChannelModal = ({ show, handleClose, channel }) => {
         <Modal.Title>Переименовать канал</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleRename}>
           <Form.Group>
             <Form.Label>Новое название</Form.Label>
@@ -33,12 +48,13 @@ const RenameChannelModal = ({ show, handleClose, channel }) => {
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
+              isInvalid={!!error}
               required
             />
           </Form.Group>
           <div className="d-flex justify-content-end mt-3">
             <Button variant="secondary" onClick={handleClose} className="me-2">Отмена</Button>
-            <Button type="submit" variant="primary">Сохранить</Button>
+            <Button type="submit" variant="primary" disabled={!!error}>Сохранить</Button>
           </div>
         </Form>
       </Modal.Body>

@@ -1,9 +1,12 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Navbar, Container } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import ChatPage from './Components/pages/ChatPage.jsx';
 import LoginPage from './Components/pages/LoginPage.jsx';
-import SignUpPage from './Components/pages/SignUpPage.jsx'; // Импортируем страницу регистрации
+import SignUpPage from './Components/pages/SignUpPage.jsx';
 import NotFoundPage from './Components/pages/NotFoundPage.jsx';
 import AuthButton from './Components/components/AuthButton.jsx';
 import PrivateRoute from './Components/routes/PrivateRoute.jsx';
@@ -28,10 +31,11 @@ const App = () => (
           }
         />
         <Route path={routes.loginPagePath()} element={<LoginPage />} />
-        <Route path={routes.signUpPagePath()} element={<SignUpPage />} /> {/* Добавили маршрут */}
+        <Route path={routes.signUpPagePath()} element={<SignUpPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
+    <ToastContainer position="top-right" autoClose={3000} />
   </div>
 );
 

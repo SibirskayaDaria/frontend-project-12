@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Button, Navbar as BootstrapNavbar, Container } from 'react-bootstrap';
 
+
 const Navbar = ({ onLogout }) => {
   const username = useSelector((state) => state.auth?.username);
   const location = useLocation();

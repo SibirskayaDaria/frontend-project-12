@@ -18,7 +18,6 @@ const RouterComponent = () => (
       }
     />
     <Route path={routes.loginPagePath()} element={<LoginPage />} />
-    <Route path={routes.loginPagePath()} element={<LoginPage />} />
     <Route path={routes.signUpPagePath()} element={<SignUpPage />} />
     <Route path="*" element={<NotFoundPage />} />
   </Routes>

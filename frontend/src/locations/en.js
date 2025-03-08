@@ -1,13 +1,20 @@
 const en = {
     translation: {
       channels: {
-        menu: 'Channel control',
-        remove: 'Remove',
-        rename: 'Rename',
-        channels: 'Channels',
-        created: 'Channel created',
-        renamed: 'Channel renamed',
-        removed: 'Channel removed',
+        menu: "Channel management",
+        remove: "Delete",
+        rename: "Rename",
+        channels: "Channels",
+        created: "Channel created",
+        renamed: "Channel renamed",
+        removed: "Channel deleted",
+        addSuccess: "Channel successfully added",
+        addError: "Error adding channel",
+        deleteSuccess: "Channel successfully deleted",
+        deleteError: "Error deleting channel",
+        renameSuccess: "Channel successfully renamed",
+        renameError: "Error renaming channel"
+        
       },
       loading: 'Loading...',
       login: {

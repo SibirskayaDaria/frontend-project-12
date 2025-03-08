@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Button, Form, Col, Card, Row } from 'react-bootstrap';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import avatarImagePath from '../../assets/avatar.jpg';
 import { useAuth } from '../../hooks/index.jsx';
 import routes from '../../routes.js';
@@ -23,8 +24,9 @@ const logInSchema = yup.object({
 });
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const username = useSelector((state) => state.auth?.username);
-  console.log('Логин успешен, username в Redux:', username);
+  console.log(t('login.success'), username);
 
   const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
@@ -54,7 +56,7 @@ const LoginPage = () => {
         auth.logIn({ username: values.username });
 
         const from = location.state?.from?.pathname || routes.chatPagePath();
-        console.log('Redirecting to:', from);
+        console.log(t('login.redirect'), from);
         navigate(from, { replace: true });
 
       } catch (err) {
@@ -63,7 +65,7 @@ const LoginPage = () => {
           setAuthFailed(true);
           if (inputRef.current) inputRef.current.select();
         } else {
-          console.error('Ошибка при авторизации:', err);
+          console.error(t('login.error'), err);
         }
       }
     },
@@ -79,14 +81,14 @@ const LoginPage = () => {
                 <Col xs={12} md={6} className="d-flex justify-content-center mb-4 mb-md-0">
                   <img
                     src={avatarImagePath}
-                    alt="LogIn page"
+                    alt={t('login.avatarAlt')}
                     className="rounded-circle"
                     style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                   />
                 </Col>
                 <Col xs={12} md={6}>
                   <Form onSubmit={formik.handleSubmit}>
-                    <h1 className="text-center mb-4">Войти</h1>
+                    <h1 className="text-center mb-4">{t('login.title')}</h1>
                     <fieldset disabled={formik.isSubmitting}>
                       <Form.Group className="mb-3 form-floating" controlId="username">
                         <Form.Control
@@ -95,13 +97,13 @@ const LoginPage = () => {
                           onChange={formik.handleChange}
                           value={formik.values.username}
                           onBlur={formik.handleBlur}
-                          placeholder="username"
+                          placeholder={t('login.usernamePlaceholder')}
                           autoComplete="username"
                           isInvalid={authFailed || (formik.touched.username && formik.errors.username)}
                           ref={inputRef}
                           required
                         />
-                        <Form.Label>Ваш ник</Form.Label>
+                        <Form.Label>{t('login.usernameLabel')}</Form.Label>
                         {formik.touched.username && formik.errors.username && (
                           <div className="invalid-feedback">{formik.errors.username}</div>
                         )}
@@ -113,18 +115,18 @@ const LoginPage = () => {
                           onChange={formik.handleChange}
                           value={formik.values.password}
                           onBlur={formik.handleBlur}
-                          placeholder="password"
+                          placeholder={t('login.passwordPlaceholder')}
                           autoComplete="current-password"
                           isInvalid={authFailed || (formik.touched.password && formik.errors.password)}
                           required
                         />
-                        <Form.Label>Пароль</Form.Label>
+                        <Form.Label>{t('login.passwordLabel')}</Form.Label>
                         <Form.Control.Feedback type="invalid">
-                          {authFailed ? 'Неверные имя пользователя или пароль' : formik.errors.password}
+                          {authFailed ? t('login.invalidCredentials') : formik.errors.password}
                         </Form.Control.Feedback>
                       </Form.Group>
                       <Button type="submit" variant="outline-primary" className="w-100 mb-3">
-                        Войти
+                        {t('login.submitButton')}
                       </Button>
                     </fieldset>
                   </Form>
@@ -133,8 +135,8 @@ const LoginPage = () => {
             </Card.Body>
             <Card.Footer className="p-4">
               <div className="text-center">
-                <span>Нет аккаунта?</span>{' '}
-                <NavLink to={routes.signUpPagePath()}>Регистрация</NavLink>
+                <span>{t('login.noAccount')}</span>{' '}
+                <NavLink to={routes.signUpPagePath()}>{t('login.signUpLink')}</NavLink>
               </div>
             </Card.Footer>
           </Card>

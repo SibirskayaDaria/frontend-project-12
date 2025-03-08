@@ -4,10 +4,14 @@ import { Nav, Button, Modal, Form, Dropdown } from 'react-bootstrap';
 import { fetchData, fetchDataAddChannel, setCurrentChannel } from '../../slices/channelsSlice.js';
 import { useDeleteChannelMutation, useRenameChannelMutation } from '../../slices/apiSlice.js';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import routes from '../../routes.js';
+import filterProfanity from '../../profanityFilter.js';
+
 
 const Channels = () => {
-  const { channels, currentChannelId, loading, error } = useSelector((s) => s.channelsInfo);
+  const { channels, currentChannelId } = useSelector((s) => s.channelsInfo);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -29,54 +33,65 @@ const Channels = () => {
 
   const handleAddChannel = () => {
     if (!newChannelName.trim()) return;
+
+    const filteredName = filterProfanity(newChannelName);
+    if (!filteredName) {
+      toast.error(t('channels.prohibitedName'));
+      return;
+    }
+
     const token = localStorage.getItem('token');
-    dispatch(fetchDataAddChannel({ body: { name: newChannelName }, token }))
+    dispatch(fetchDataAddChannel({ body: { name: filteredName }, token }))
       .unwrap()
       .then(() => {
-        console.log('Канал успешно добавлен');
-        setNewChannelName(''); // Очистка поля ввода после добавления
+        toast.success(t('channels.addSuccess'));
+        setNewChannelName('');
         setShowModal(false);
       })
-      .catch((e) => console.error('Ошибка при добавлении канала:', e));
+      .catch(() => {
+        toast.error(t('channels.addError'));
+      });
   };
-  
+
   const handleCloseModal = () => {
-    setNewChannelName(''); // Очистка поля при закрытии модального окна
+    setNewChannelName('');
     setShowModal(false);
   };
-  
 
   const handleDeleteChannel = async (id) => {
     try {
       await deleteChannel(id).unwrap();
       dispatch(fetchData({ Authorization: `Bearer ${localStorage.getItem('token')}` }));
-      console.log(`Канал ${id} удален`);
+      toast.success(t('channels.deleteSuccess', { id }));
     } catch (error) {
-      console.error('Ошибка удаления канала:', error);
+      toast.error(t('channels.deleteError'));
     }
   };
 
   const handleRenameChannel = async () => {
     if (!channelToRename || !renameChannelName.trim()) {
-      console.error("Ошибка: Не указан канал или новое имя!");
+      toast.error(t('channels.renameError'));
       return;
     }
-  
+
+    const filteredName = filterProfanity(renameChannelName);
+    if (!filteredName) {
+      toast.error(t('channels.prohibitedName'));
+      return;
+    }
+
     const { id } = channelToRename;
-    const requestData = { name: renameChannelName }; // Убедись, что ключ "name" соответствует API
-  
-    console.log(`handleRenameChannel: отправка запроса PATCH на ${routes.channelPath(id)}`);
-    
+    const requestData = { name: filteredName };
+
     try {
       await renameChannel({ id, ...requestData }).unwrap();
       dispatch(fetchData({ Authorization: `Bearer ${localStorage.getItem('token')}` }));
       setShowRenameModal(false);
-      console.log(`Канал ${id} успешно переименован`);
+      toast.success(t('channels.renameSuccess', { id }));
     } catch (error) {
-      console.error("Ошибка переименования канала:", error);
+      toast.error(t('channels.renameError'));
     }
   };
-  
 
   return (
     <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
@@ -109,8 +124,7 @@ const Channels = () => {
         ))}
       </Nav>
 
-      {/* Модалка для добавления канала */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton><Modal.Title>Создать канал</Modal.Title></Modal.Header>
         <Modal.Body>
           <Form.Group>
@@ -124,12 +138,11 @@ const Channels = () => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Отмена</Button>
+          <Button variant="secondary" onClick={handleCloseModal}>Отмена</Button>
           <Button variant="primary" onClick={handleAddChannel}>Добавить</Button>
         </Modal.Footer>
       </Modal>
 
-      {/* Модалка для переименования канала */}
       <Modal show={showRenameModal} onHide={() => setShowRenameModal(false)} centered>
         <Modal.Header closeButton><Modal.Title>Переименовать канал</Modal.Title></Modal.Header>
         <Modal.Body>

@@ -1,13 +1,19 @@
 const ru = {
     translation: {
       channels: {
-        menu: 'Управление каналом',
-        remove: 'Удалить',
-        rename: 'Переименовать',
-        channels: 'Каналы',
-        created: 'Канал создан',
-        renamed: 'Канал переименован',
-        removed: 'Канал удалён',
+        menu: "Управление каналом",
+        remove: "Удалить",
+        rename: "Переименовать",
+        channels: "Каналы",
+        created: "Канал создан",
+        renamed: "Канал переименован",
+        removed: "Канал удалён",
+        addSuccess: "Канал успешно добавлен",
+        addError: "Ошибка при добавлении канала",
+        deleteSuccess: "Канал успешно удалён",
+        deleteError: "Ошибка при удалении канала",
+        renameSuccess: "Канал успешно переименован",
+        renameError: "Ошибка при переименовании канала"        
       },
       loading: 'Загрузка...',
       login: {
