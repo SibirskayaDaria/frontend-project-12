@@ -9,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import routes from '../../routes.js';
 import filterProfanity from '../../profanityFilter.js';
 
-
 const Channels = () => {
   const { channels, currentChannelId } = useSelector((s) => s.channelsInfo);
   const dispatch = useDispatch();
@@ -93,6 +92,11 @@ const Channels = () => {
     }
   };
 
+  const handleCloseRenameModal = () => {
+    setRenameChannelName('');
+    setShowRenameModal(false);
+  };
+
   return (
     <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
       <div className="d-flex mt-1 justify-content-between align-items-center mb-2 ps-4 pe-2 p-4">
@@ -115,8 +119,12 @@ const Channels = () => {
               <Dropdown>
                 <Dropdown.Toggle variant="light" className="p-0 border-0 ms-2">⋮</Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => { setChannelToRename(channel); setRenameChannelName(channel.name); setShowRenameModal(true); }}>Переименовать</Dropdown.Item>
-                  <Dropdown.Item className="text-danger" onClick={() => handleDeleteChannel(channel.id)}>Удалить</Dropdown.Item>
+                  <Dropdown.Item onClick={() => { setChannelToRename(channel); setRenameChannelName(channel.name); setShowRenameModal(true); }}>
+                    {t('channels.rename')}
+                  </Dropdown.Item>
+                  <Dropdown.Item className="text-danger" onClick={() => handleDeleteChannel(channel.id)}>
+                    {t('channels.delete')}
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             )}
@@ -125,40 +133,40 @@ const Channels = () => {
       </Nav>
 
       <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton><Modal.Title>Создать канал</Modal.Title></Modal.Header>
+        <Modal.Header closeButton><Modal.Title>{t('channels.createChannel')}</Modal.Title></Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Название канала</Form.Label>
+            <Form.Label>{t('channels.channelName')}</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Введите название"
+              placeholder={t('channels.enterName')}
               value={newChannelName}
               onChange={(e) => setNewChannelName(e.target.value)}
             />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Отмена</Button>
-          <Button variant="primary" onClick={handleAddChannel}>Добавить</Button>
+          <Button variant="secondary" onClick={handleCloseModal}>{t('channels.cancel')}</Button>
+          <Button variant="primary" onClick={handleAddChannel}>{t('channels.add')}</Button>
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showRenameModal} onHide={() => setShowRenameModal(false)} centered>
-        <Modal.Header closeButton><Modal.Title>Переименовать канал</Modal.Title></Modal.Header>
+      <Modal show={showRenameModal} onHide={handleCloseRenameModal} centered>
+        <Modal.Header closeButton><Modal.Title>{t('channels.renameChannel')}</Modal.Title></Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Новое название</Form.Label>
+            <Form.Label>{t('channels.newName')}</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Введите новое название"
+              placeholder={t('channels.enterNewName')}
               value={renameChannelName}
               onChange={(e) => setRenameChannelName(e.target.value)}
             />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowRenameModal(false)}>Отмена</Button>
-          <Button variant="primary" onClick={handleRenameChannel}>Сохранить</Button>
+          <Button variant="secondary" onClick={handleCloseRenameModal}>{t('channels.cancel')}</Button>
+          <Button variant="primary" onClick={handleRenameChannel}>{t('channels.save')}</Button>
         </Modal.Footer>
       </Modal>
     </div>

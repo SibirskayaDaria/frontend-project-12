@@ -19,7 +19,7 @@ const i18n = i18next.createInstance();
     .use(initReactI18next)
     .init({
       resources,
-      fallbackLng: 'ru',////
+      fallbackLng: 'en',
     });
 
 
@@ -32,7 +32,7 @@ if (!rootElement) {
       <Provider store={store}>
         <AuthProvider>
           <BrowserRouter>
-              <App />
+              <App />dsdsd
           </BrowserRouter>
         </AuthProvider>
       </Provider>

@@ -1,20 +1,23 @@
 const en = {
     translation: {
       channels: {
-        menu: "Channel management",
-        remove: "Delete",
-        rename: "Rename",
-        channels: "Channels",
-        created: "Channel created",
-        renamed: "Channel renamed",
-        removed: "Channel deleted",
-        addSuccess: "Channel successfully added",
-        addError: "Error adding channel",
-        deleteSuccess: "Channel successfully deleted",
-        deleteError: "Error deleting channel",
-        renameSuccess: "Channel successfully renamed",
-        renameError: "Error renaming channel"
-        
+        channels: 'Channels',
+        createChannel: 'Create Channel',
+        channelName: 'Channel Name',
+        enterName: 'Enter channel name',
+        prohibitedName: 'Channel name contains prohibited words',
+        addSuccess: 'Channel added successfully',
+        addError: 'Error adding channel',
+        deleteSuccess: 'Channel deleted successfully',
+        deleteError: 'Error deleting channel',
+        renameSuccess: 'Channel renamed successfully',
+        renameError: 'Error renaming channel',
+        rename: 'Rename',
+        delete: 'Delete',
+        cancel: 'Cancel',
+        save: 'Save',
+        newName: 'New Name',
+        enterNewName: 'Enter new name',
       },
       loading: 'Loading...',
       login: {
